@@ -17,11 +17,11 @@ public class ConsoleProgress implements Runnable {
                 counter = 0;
             }
             try {
+                System.out.print("\r Loading ... " + planes[counter]);
                 Thread.sleep(500);
             } catch (InterruptedException e) {
-                /**/
+                Thread.currentThread().interrupt();
             }
-            System.out.print("\r Loading ... " + planes[counter]);
             counter++;
         }
     }
