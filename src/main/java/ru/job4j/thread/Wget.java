@@ -50,6 +50,10 @@ public class Wget implements Runnable {
         int speed = Integer.parseInt(args[1]);
         Thread wget = new Thread(new Wget(url, speed));
         wget.start();
+<<<<<<< HEAD
         wget.join();
+=======
+        //wget.join();
+>>>>>>> origin/master
     }
 }
