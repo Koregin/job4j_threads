@@ -20,10 +20,10 @@ public class UserCache {
         return User.of(users.get(id).getName());
     }
 
-    public List<User> findAll() throws CloneNotSupportedException {
+    public List<User> findAll() {
         List<User> usersListClone = new ArrayList<>();
         for (User user : users.values()) {
-            usersListClone.add((User) user.clone());
+            usersListClone.add(User.of(user.getName()));
         }
         return usersListClone;
     }

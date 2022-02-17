@@ -1,6 +1,6 @@
 package ru.job4j.ref;
 
-public class User implements Cloneable {
+public class User {
     private int id;
     private String name;
 
@@ -24,10 +24,5 @@ public class User implements Cloneable {
 
     public void setName(String name) {
         this.name = name;
-    }
-
-    @Override
-    protected Object clone() throws CloneNotSupportedException {
-        return super.clone();
     }
 }
