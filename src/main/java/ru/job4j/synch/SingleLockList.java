@@ -32,6 +32,6 @@ public class SingleLockList<T> implements Iterable<T> {
     }
 
     public synchronized List<T> copy(List<T> source) {
-        return List.copyOf(source);
+        return new ArrayList<>(source);
     }
 }
