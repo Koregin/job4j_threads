@@ -20,13 +20,21 @@ public class SimpleBlockingQueueTest {
         Thread producer = new Thread(new Runnable() {
             @Override
             public void run() {
-                simpleBlockingQueue.offer(5);
+                try {
+                    simpleBlockingQueue.offer(5);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
             }
         });
         Thread consumer = new Thread(new Runnable() {
             @Override
             public void run() {
-                result.add(simpleBlockingQueue.poll());
+                try {
+                    result.add(simpleBlockingQueue.poll());
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
             }
         });
         producer.start();
@@ -44,7 +52,11 @@ public class SimpleBlockingQueueTest {
             @Override
             public void run() {
                 for (int i = 1; i < 6; i++) {
-                    simpleBlockingQueue.offer(i);
+                    try {
+                        simpleBlockingQueue.offer(i);
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
+                    }
                 }
             }
         });
@@ -53,7 +65,11 @@ public class SimpleBlockingQueueTest {
             public void run() {
                 Integer temp;
                 for (int i = 1; i < 6; i++) {
-                    result.add(simpleBlockingQueue.poll());
+                    try {
+                        result.add(simpleBlockingQueue.poll());
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
+                    }
                 }
             }
         });
