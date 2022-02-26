@@ -12,7 +12,11 @@ public class SimpleBlockingQueue<T> {
     @GuardedBy("this")
     private Queue<T> queue = new LinkedList<>();
 
-    private final int queueLimit = 5;
+    private final int queueLimit;
+
+    public SimpleBlockingQueue(int queueLimit) {
+        this.queueLimit = queueLimit;
+    }
 
     public synchronized void offer(T value) throws InterruptedException {
         if (queue.size() == queueLimit) {

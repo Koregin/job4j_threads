@@ -15,7 +15,7 @@ public class SimpleBlockingQueueTest {
 
     @Test
     public void whenOneThreadOfferAndOneThreadPoll() throws InterruptedException {
-        SimpleBlockingQueue<Integer> simpleBlockingQueue = new SimpleBlockingQueue<>();
+        SimpleBlockingQueue<Integer> simpleBlockingQueue = new SimpleBlockingQueue<>(5);
 
         Thread producer = new Thread(new Runnable() {
             @Override
@@ -46,7 +46,7 @@ public class SimpleBlockingQueueTest {
 
     @Test
     public void whenOneThreadSeveralOffer() throws InterruptedException {
-        SimpleBlockingQueue<Integer> simpleBlockingQueue = new SimpleBlockingQueue<>();
+        SimpleBlockingQueue<Integer> simpleBlockingQueue = new SimpleBlockingQueue<>(5);
 
         Thread producer = new Thread(new Runnable() {
             @Override
