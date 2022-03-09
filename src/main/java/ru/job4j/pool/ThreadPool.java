@@ -6,31 +6,23 @@ import java.util.LinkedList;
 import java.util.List;
 
 public class ThreadPool {
+    public final static int PROCESSORS = Runtime.getRuntime().availableProcessors();
     private final List<Thread> threads = new LinkedList<>();
-    private final SimpleBlockingQueue<Runnable> tasks = new SimpleBlockingQueue<>(Runtime.getRuntime().availableProcessors());
+    private final SimpleBlockingQueue<Runnable> tasks = new SimpleBlockingQueue<>(PROCESSORS);
 
-    private ThreadPool() {
-        System.out.println("Thread pool was created!");
-    }
-
-    private static class SingletonThreadPool {
-        public static final ThreadPool THREAD_INSTANCE = new ThreadPool();
-    }
-
-    public static ThreadPool getInstance() {
-        return SingletonThreadPool.THREAD_INSTANCE;
+    private ThreadPool() throws InterruptedException {
+        for (int i = 0; i < PROCESSORS; i++) {
+            work(new Work(i));
+            threads.add(new Thread(tasks.poll()));
+            threads.get(i).start();
+        }
     }
 
     /*Method should add task in blocking queue*/
-    public void work(Runnable job) {
-        try {
-            tasks.offer(job);
-            Thread thread = new Thread(tasks.poll());
-            threads.add(thread);
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
+    public void work(Runnable job) throws InterruptedException {
+        tasks.offer(job);
     }
+
     /* Method should finish all started tasks */
     public void shutdown() {
         for (Thread thread : threads) {
@@ -38,12 +30,10 @@ public class ThreadPool {
         }
     }
 
-    public static void main(String[] args) {
-        ThreadPool threadPool = ThreadPool.getInstance();
-        for (int i = 0; i < 5; i++) {
-            threadPool.work(new Work(i));
-        }
+    public static void main(String[] args) throws InterruptedException {
+        ThreadPool threadPool = new ThreadPool();
         System.out.println("Size of threads pool: " + threadPool.threads.size());
+        threadPool.shutdown();
     }
 }
 
@@ -58,6 +48,7 @@ class Work implements Runnable {
     public void run() {
         if (!Thread.currentThread().isInterrupted()) {
             try {
+                System.out.println("Starting thread " + Thread.currentThread().getName());
                 Thread.sleep(3000);
             } catch (InterruptedException e) {
                 e.printStackTrace();
