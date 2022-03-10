@@ -26,18 +26,6 @@ public class EmailNotification {
     public void send(String subject, String body, String email) {
 
     }
-
-    public static void main(String[] args) {
-        EmailNotification emailNotification = new EmailNotification();
-        emailNotification.pool.submit(new Runnable() {
-            @Override
-            public void run() {
-                emailNotification.emailTo(new User("Ivan", "ivan@gmail.com"));
-                System.out.println("Email was sent");
-            }
-        });
-        emailNotification.close();
-    }
 }
 
 class User {
