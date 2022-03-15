@@ -8,13 +8,21 @@ import java.util.List;
 public class ThreadPool {
     public final static int PROCESSORS = Runtime.getRuntime().availableProcessors();
     private final List<Thread> threads = new LinkedList<>();
-    private final SimpleBlockingQueue<Runnable> tasks = new SimpleBlockingQueue<>(PROCESSORS);
+    private final SimpleBlockingQueue<Runnable> tasks = new SimpleBlockingQueue<>(5);
 
     private ThreadPool() throws InterruptedException {
         for (int i = 0; i < PROCESSORS; i++) {
-            work(new Work(i));
-            threads.add(new Thread(tasks.poll()));
-            threads.get(i).start();
+            Thread thread = new Thread(() -> {
+                while (!Thread.currentThread().isInterrupted()) {
+                    try {
+                        tasks.poll().run();
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
+                    }
+                }
+            });
+            threads.add(thread);
+            thread.start();
         }
     }
 
@@ -32,28 +40,15 @@ public class ThreadPool {
 
     public static void main(String[] args) throws InterruptedException {
         ThreadPool threadPool = new ThreadPool();
-        System.out.println("Size of threads pool: " + threadPool.threads.size());
-        threadPool.shutdown();
-    }
-}
-
-class Work implements Runnable {
-    private int id;
-
-    public Work(int id) {
-        this.id = id;
-    }
-
-    @Override
-    public void run() {
-        if (!Thread.currentThread().isInterrupted()) {
-            try {
-                System.out.println("Starting thread " + Thread.currentThread().getName());
-                Thread.sleep(3000);
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            }
-            System.out.println("Work " + id + " was completed");
+        for (int i = 0; i < 5; i++) {
+            threadPool.work(new Runnable() {
+                @Override
+                public void run() {
+                    System.out.println("Hello from thread " + Thread.currentThread().getName());
+                }
+            });
         }
+        threadPool.shutdown();
+        System.out.println("Hello from main thread");
     }
 }
