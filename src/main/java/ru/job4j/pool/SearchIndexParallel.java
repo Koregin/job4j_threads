@@ -1,16 +1,14 @@
 package ru.job4j.pool;
 
-import java.util.List;
-import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.ForkJoinPool;
-import java.util.concurrent.RecursiveTask;
+import java.util.concurrent.RecursiveAction;
 
-public class SearchIndexParallel<T> extends RecursiveTask<List<Integer>> {
+public class SearchIndexParallel<T> extends RecursiveAction {
     private final T[] array;
     private final T searchObj;
     private final int start;
     private final int end;
-    private final List<Integer> indexList = new CopyOnWriteArrayList<>();
+    private final static int[] INDEX = new int[]{-1};
 
     public SearchIndexParallel(T[] array, T obj) {
         this.array = array;
@@ -27,30 +25,30 @@ public class SearchIndexParallel<T> extends RecursiveTask<List<Integer>> {
     }
 
     @Override
-    protected List<Integer> compute() {
+    protected void compute() {
         int objLimit = 10;
         if (end - start <= objLimit) {
             for (int i = start; i <= end; i++) {
                 if (array[i].equals(searchObj)) {
-                    indexList.add(i);
+                    INDEX[0] = i;
                     break;
                 }
             }
-            return indexList;
+        } else {
+            int endPartOne = (end - start) / 2 + start;
+            SearchIndexParallel<T> onePart = new SearchIndexParallel<>(array, searchObj, start, endPartOne);
+            SearchIndexParallel<T> twoPart = new SearchIndexParallel<>(array, searchObj, endPartOne + 1, end);
+            onePart.fork();
+            twoPart.fork();
+            onePart.join();
+            twoPart.join();
         }
-        int endPartOne = end % 2 == 0 ? (end - start) / 2 + start - 1 : (end - start) / 2 + start;
-        SearchIndexParallel<T> onePart = new SearchIndexParallel<>(array, searchObj, start, endPartOne);
-        SearchIndexParallel<T> twoPart = new SearchIndexParallel<>(array, searchObj, endPartOne + 1, end);
-        onePart.fork();
-        twoPart.fork();
-        indexList.addAll(onePart.join());
-        indexList.addAll(twoPart.join());
-        return indexList;
     }
 
     public Integer search() {
+        INDEX[0] = -1;
         ForkJoinPool forkJoinPool = new ForkJoinPool();
-        List<Integer> resultList = forkJoinPool.invoke(new SearchIndexParallel<>(array, searchObj));
-        return resultList.isEmpty() ? -1 : resultList.get(0);
+        forkJoinPool.invoke(new SearchIndexParallel<>(array, searchObj));
+        return INDEX[0];
     }
 }
