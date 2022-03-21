@@ -1,14 +1,14 @@
 package ru.job4j.pool;
 
 import java.util.concurrent.ForkJoinPool;
-import java.util.concurrent.RecursiveAction;
+import java.util.concurrent.RecursiveTask;
 
-public class SearchIndexParallel<T> extends RecursiveAction {
+public class SearchIndexParallel<T> extends RecursiveTask<Integer> {
     private final T[] array;
     private final T searchObj;
     private final int start;
     private final int end;
-    private final static int[] INDEX = new int[]{-1};
+    private int index = -1;
 
     public SearchIndexParallel(T[] array, T obj) {
         this.array = array;
@@ -25,30 +25,28 @@ public class SearchIndexParallel<T> extends RecursiveAction {
     }
 
     @Override
-    protected void compute() {
+    protected Integer compute() {
         int objLimit = 10;
         if (end - start <= objLimit) {
             for (int i = start; i <= end; i++) {
                 if (array[i].equals(searchObj)) {
-                    INDEX[0] = i;
+                    index = i;
                     break;
                 }
             }
-        } else {
-            int endPartOne = (end - start) / 2 + start;
-            SearchIndexParallel<T> onePart = new SearchIndexParallel<>(array, searchObj, start, endPartOne);
-            SearchIndexParallel<T> twoPart = new SearchIndexParallel<>(array, searchObj, endPartOne + 1, end);
-            onePart.fork();
-            twoPart.fork();
-            onePart.join();
-            twoPart.join();
+            return index;
         }
+        int endPartOne = (end - start) / 2 + start;
+        SearchIndexParallel<T> leftTask = new SearchIndexParallel<>(array, searchObj, start, endPartOne);
+        leftTask.fork();
+        SearchIndexParallel<T> rightTask = new SearchIndexParallel<>(array, searchObj, endPartOne + 1, end);
+        int rightResult = rightTask.compute();
+        int leftResult = leftTask.join();
+        return Math.max(leftResult, rightResult);
     }
 
     public Integer search() {
-        INDEX[0] = -1;
         ForkJoinPool forkJoinPool = new ForkJoinPool();
-        forkJoinPool.invoke(new SearchIndexParallel<>(array, searchObj));
-        return INDEX[0];
+        return forkJoinPool.invoke(new SearchIndexParallel<>(array, searchObj));
     }
 }
