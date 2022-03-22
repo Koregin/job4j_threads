@@ -10,7 +10,7 @@ import java.util.Queue;
 public class SimpleBlockingQueue<T> {
 
     @GuardedBy("this")
-    private Queue<T> queue = new LinkedList<>();
+    private final Queue<T> queue = new LinkedList<>();
 
     private final int queueLimit;
 
@@ -30,9 +30,8 @@ public class SimpleBlockingQueue<T> {
         while (queue.isEmpty()) {
             wait();
         }
-        T element = queue.poll();
-        queue.remove(element);
-        return element;
+        notifyAll();
+        return queue.remove();
     }
 
     public synchronized boolean isEmpty() {

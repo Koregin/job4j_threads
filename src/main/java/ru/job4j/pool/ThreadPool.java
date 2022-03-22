@@ -17,7 +17,8 @@ public class ThreadPool {
                     try {
                         tasks.poll().run();
                     } catch (InterruptedException e) {
-                        /* e.printStackTrace(); */
+                        /*e.printStackTrace();*/
+                        Thread.currentThread().interrupt();
                     }
                 }
             });
@@ -28,7 +29,6 @@ public class ThreadPool {
 
     /*Method should add task in blocking queue*/
     public void work(Runnable job) throws InterruptedException {
-        Thread.sleep(1);
         tasks.offer(job);
     }
 
