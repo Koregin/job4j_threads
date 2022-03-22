@@ -8,7 +8,6 @@ public class SearchIndexParallel<T> extends RecursiveTask<Integer> {
     private final T searchObj;
     private final int start;
     private final int end;
-    private int index = -1;
 
     public SearchIndexParallel(T[] array, T obj) {
         this.array = array;
@@ -27,6 +26,7 @@ public class SearchIndexParallel<T> extends RecursiveTask<Integer> {
     @Override
     protected Integer compute() {
         int objLimit = 10;
+        int index = -1;
         if (end - start <= objLimit) {
             for (int i = start; i <= end; i++) {
                 if (array[i].equals(searchObj)) {
@@ -38,10 +38,11 @@ public class SearchIndexParallel<T> extends RecursiveTask<Integer> {
         }
         int endPartOne = (end - start) / 2 + start;
         SearchIndexParallel<T> leftTask = new SearchIndexParallel<>(array, searchObj, start, endPartOne);
-        leftTask.fork();
         SearchIndexParallel<T> rightTask = new SearchIndexParallel<>(array, searchObj, endPartOne + 1, end);
-        int rightResult = rightTask.compute();
+        leftTask.fork();
+        rightTask.fork();
         int leftResult = leftTask.join();
+        int rightResult = rightTask.join();
         return Math.max(leftResult, rightResult);
     }
 
