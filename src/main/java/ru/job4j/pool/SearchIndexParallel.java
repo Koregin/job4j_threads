@@ -46,7 +46,7 @@ public class SearchIndexParallel<T> extends RecursiveTask<Integer> {
         return Math.max(leftResult, rightResult);
     }
 
-    public Integer search() {
+    public static <T> Integer search(T[] array, T searchObj) {
         ForkJoinPool forkJoinPool = new ForkJoinPool();
         return forkJoinPool.invoke(new SearchIndexParallel<>(array, searchObj));
     }
