@@ -5,7 +5,6 @@ import org.junit.Test;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import static org.hamcrest.core.Is.is;
-import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertThat;
 
 public class ThreadPoolTest {
@@ -15,11 +14,11 @@ public class ThreadPoolTest {
         ThreadPool threadPool = new ThreadPool();
         AtomicInteger value = new AtomicInteger(0);
 
-        for (int i = 0; i < 1000; i++) {
+        for (int i = 0; i < 100000; i++) {
             threadPool.work(value::getAndIncrement);
         }
-        threadPool.shutdown();
-        assertThat(value.get(), is(1000));
+        Thread.sleep(100);
+        assertThat(value.get(), is(100000));
     }
 
     @Test
@@ -27,12 +26,11 @@ public class ThreadPoolTest {
         ThreadPool threadPool = new ThreadPool();
         AtomicInteger value = new AtomicInteger(0);
 
-        for (int i = 0; i < 1000; i++) {
+        for (int i = 0; i < 100; i++) {
             threadPool.work(value::getAndIncrement);
-            if (i == 100) {
-                break;
-            }
+            Thread.sleep(10);
         }
-        assertNotEquals(value.get(), is(1000));
+        threadPool.shutdown();
+        assertThat(value.get(), is(100));
     }
 }
