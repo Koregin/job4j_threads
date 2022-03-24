@@ -50,25 +50,22 @@ public class RolColSum {
             return Objects.hash(rowSum, colSum);
         }
     }
+
     /* Consistent method*/
     public static Sums[] sum(int[][] matrix) {
         Sums[] sums = new Sums[matrix.length];
         for (int i = 0; i < matrix.length; i++) {
             sums[i] = new Sums();
         }
-        for (int row = 0; row < matrix.length; row++) {
+        for (int index = 0; index < matrix.length; index++) {
             int rowSum = 0;
-            for (int col = 0; col < matrix.length; col++) {
-                rowSum += matrix[row][col];
-            }
-            sums[row].setRowSum(rowSum);
-        }
-        for (int col = 0; col < matrix.length; col++) {
             int colSum = 0;
-            for (int[] ints : matrix) {
-                colSum += ints[col];
+            for (int col = 0; col < matrix.length; col++) {
+                rowSum += matrix[index][col];
+                colSum += matrix[col][index];
             }
-            sums[col].setColSum(colSum);
+            sums[index].setRowSum(rowSum);
+            sums[index].setColSum(colSum);
         }
         return sums;
     }
@@ -88,9 +85,7 @@ public class RolColSum {
             int colSum = 0;
             for (int col = 0; col < data.length; col++) {
                 rowSum += data[rowColindex][col];
-            }
-            for (int[] datum : data) {
-                colSum += datum[rowColindex];
+                colSum += data[col][rowColindex];
             }
             return new Sums(rowSum, colSum);
         });
