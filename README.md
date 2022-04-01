@@ -6,3 +6,5 @@ Threads
 Синхронизация ресурсов
 Wait, Notify, NotifyAll
 Non Blocking Algorithm
+
+В курсе производилась работа с ветками git.
