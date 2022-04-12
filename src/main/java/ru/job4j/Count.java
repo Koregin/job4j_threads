@@ -7,7 +7,7 @@ import net.jcip.annotations.ThreadSafe;
 public class Count {
     @GuardedBy("this")
     private int value;
-
+    /*This is right right comment*/
     public synchronized void increment() {
         this.value++;
     }

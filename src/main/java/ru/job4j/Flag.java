@@ -2,7 +2,7 @@ package ru.job4j;
 
 public class Flag {
     private static volatile boolean flag = true;
-
+    /* Right comment in Flag*/
     public static void main(String[] args) throws InterruptedException {
         Thread thread = new Thread(
                 () -> {
