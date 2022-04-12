@@ -7,3 +7,5 @@ Wait, Notify, NotifyAll
 Non Blocking Algorithm
 
 Объединение зафиксированных изменений
+
+Новые изменения после git stash
